@@ -23,6 +23,7 @@ const TaxesForm = () => {
     //Form elements
     const [id, setId] = useState(-99)
     const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(null);
     const [allCheckboxes, setAllCheckboxes] = useState(false)
 
 
@@ -54,6 +55,7 @@ const TaxesForm = () => {
                 "erasmusValues": erasmusValues,
                 "exceptionsValues": exceptionsValues
             })
+        handleSuccess("Data saved.")
     }
 
     const handleUpdate = async (e) => {
@@ -74,7 +76,9 @@ const TaxesForm = () => {
             else
             {
                 handleError("Please search for an item before trying to update it. The necessary fields are: Anul curent, Moneda, Mod Calcul, Lunile")
+                return
             }
+            handleSuccess("Updated data")
     }
 
     const handleSearch = async (e) =>{
@@ -101,13 +105,20 @@ const TaxesForm = () => {
 
     const handleDelete = async (e) =>{
         e.preventDefault()
-        await Api.delete(`/data/${id}`).catch(error => handleError("Please search for an item before trying to update it. The necessary fields are: Anul curent, Moneda, Mod Calcul, Lunile"))
+        await Api.delete(`/data/${id}`).then(()=> handleSuccess("Data deleted.")).catch(error => handleError("Please search for an item before trying to update it. " +
+            "The necessary fields are: Anul curent, Moneda, Mod Calcul, Lunile"))
     }
 
     const handleError = (message) => {
         setError(message);
         setTimeout(() => {
             setError(null);
+        }, 10000);
+    }
+    const handleSuccess = (message) => {
+        setSuccess(message);
+        setTimeout(() => {
+            setSuccess(null);
         }, 5000);
     }
 
@@ -119,6 +130,13 @@ const TaxesForm = () => {
                     <p>{error}</p>
                 </Message>
             )}
+            {success && (
+                <Message positive>
+                    <Message.Header>Success</Message.Header>
+                    <p>{success}</p>
+                </Message>
+            )
+            }
             <form className='ui form'>
                 <Header setSelectedYear={setSelectedYear}/>
                 <TaxSettings selectedYear={selectedYear}
